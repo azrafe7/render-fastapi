@@ -8,7 +8,7 @@ import pypdfium2 as pdfium
 from PIL import Image
 import os
 import logging
-from typing import Optional
+from typing import Optional, cast
 
 logger = logging.getLogger('uvicorn.error')
 logger.setLevel(logging.DEBUG)
@@ -62,7 +62,7 @@ def concat_images(images):
 
 def process_pdf(file_url: str, op: int = DEFAULT_OP, type: int = DEFAULT_TYPE):
     logger.debug(f"Processing '{file_url}'")
-    logger.debug(f"Operation  : {op}")
+    logger.debug(f"Operation  : {ObjectDeletionFlag(op)}")
     logger.debug(f"Output Type: {OUTPUT_MEDIA_TYPES[type]}")
     
     # Check if the input file has a .pdf extension
@@ -91,7 +91,7 @@ def process_pdf(file_url: str, op: int = DEFAULT_OP, type: int = DEFAULT_TYPE):
 
     # Process and compress pages
     for page in pdf_writer.pages:
-        pdf_writer.remove_objects_from_page(page=page, to_delete=op)
+        pdf_writer.remove_objects_from_page(page=page, to_delete=ObjectDeletionFlag(op))
         page.compress_content_streams()  # This might be CPU intensive!
 
     # Write the result to a BytesIO object
