@@ -27,7 +27,8 @@ for k, v in OPS.items():
 
 OUTPUT_MEDIA_TYPES = {
     0: 'application/pdf',
-    1: 'image/png'
+    1: 'image/png',
+    2: 'image/jpeg',
 }
 
 DEFAULT_OP = 1
@@ -101,7 +102,7 @@ def process_pdf(file_url: str, op: int = DEFAULT_OP, type: int = DEFAULT_TYPE):
     pdf_writer.write(output)
     output.seek(0)
 
-    if type == 1: # image
+    if type in [1, 2]: # image
         # Load a document using pdfium
         pdf = pdfium.PdfDocument(output)
         # Loop over pages and render
@@ -114,7 +115,11 @@ def process_pdf(file_url: str, op: int = DEFAULT_OP, type: int = DEFAULT_TYPE):
         
         # Write the result to a BytesIO object
         output = BytesIO()
-        output_image.save(output, format='PNG')
+        if type == 1:
+            output_image.save(output, format='PNG')
+        else:
+            output_image.convert('RGB').save(output, format='JPEG', quality=90)
+            
         output.seek(0)
         
     # Generate the output filename
