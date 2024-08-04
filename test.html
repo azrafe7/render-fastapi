@@ -52,7 +52,7 @@
     </div>
     <div id="log-div">
       <label for="log">Log:</label>
-      <textarea id="log" rows=7></textarea>
+      <textarea id="log" rows=10></textarea>
     </div>
   </form>
   
@@ -73,11 +73,14 @@
       fileUrlEl.value = DEFAULT_PDF;
       opEl.value = "";
       typeEl.value = "";
-      logEl.textContent += "Reset params!\n"
+      logEl.textContent += "Reset params!\n";
     });
     
     sendEl.addEventListener('click', (evt) => {
-      let endpoint = "http://localhost:5000/clean_pdf";
+      let location = window.location.href;
+      let locationParts = location.split('/');
+      locationParts.pop();
+      let endpoint = locationParts.join('/') + "/clean_pdf";
       
       payload = {
         file_url: fileUrlEl.value,
@@ -86,7 +89,9 @@
       if (typeEl.value != '') payload.type = typeEl.value;
       
       console.log('Sending payload: ', payload);
-      logEl.textContent += `Sending payload \n${JSON.stringify(payload, null, 2)}\n...\n`
+      logEl.textContent += `Sending request to ${endpoint}\n`;
+      logEl.textContent += `Payload:\n${JSON.stringify(payload, null, 2)}\n`;
+      logEl.textContent += `Please wait...\n`;
       
       const headers = new Headers({
         "Content-Type": "application/json"
@@ -105,7 +110,10 @@
         
         window.location = blobURL;
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        console.error(error);
+        logEl.textContent += `ERROR: ${error}\n`;
+      });
     });
     
     resetEl.click();
