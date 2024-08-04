@@ -4,7 +4,7 @@
       font-family: monospace;
     }
     
-    input[type="text"] {
+    input[type="text"], textarea {
       min-width: 700px;
     }
     
@@ -16,10 +16,15 @@
       padding: 3px;
     }
     
+    #log-div {
+      margin-top: 6px;
+    }
+    
     form label {
       display: inline-block;
       min-width: 70px;
       font-weight: bold;
+      vertical-align: top;
     }
     
     form select {
@@ -45,6 +50,10 @@
       <input id="reset" type="button" value="Reset"></input>
       <input id="send" type="button" value="Send"></input>
     </div>
+    <div id="log-div">
+      <label for="log">Log:</label>
+      <textarea id="log" rows=7></textarea>
+    </div>
   </form>
   
   <script>
@@ -55,6 +64,7 @@
     let typeEl = document.querySelector('#type');
     let resetEl = document.querySelector('#reset');
     let sendEl = document.querySelector('#send');
+    let logEl = document.querySelector('#log');
     
     ['', 0, 1].forEach((opt) => opEl.options.add(new Option(opt)));
     ['', 0, 1, 2].forEach((opt) => typeEl.options.add(new Option(opt)));
@@ -63,6 +73,7 @@
       fileUrlEl.value = DEFAULT_PDF;
       opEl.value = "";
       typeEl.value = "";
+      logEl.textContent += "Reset params!\n"
     });
     
     sendEl.addEventListener('click', (evt) => {
@@ -75,6 +86,7 @@
       if (typeEl.value != '') payload.type = typeEl.value;
       
       console.log('Sending payload: ', payload);
+      logEl.textContent += `Sending payload \n${JSON.stringify(payload, null, 2)}\n...\n`
       
       const headers = new Headers({
         "Content-Type": "application/json"
