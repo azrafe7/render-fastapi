@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Query, Body
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, FileResponse
 from pydantic import BaseModel, HttpUrl
 import requests
 from io import BytesIO
@@ -45,6 +45,10 @@ class ProcessRequest(BaseModel):
 @app.get("/")
 async def root():
     return {"message": "Server running"}
+
+@app.get("/test")
+async def test_page():
+    return FileResponse('test.html')
 
 def concat_images(images):
     widths, heights = zip(*(image.size for image in images))

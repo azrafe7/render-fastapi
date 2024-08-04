@@ -1,0 +1,102 @@
+<html>
+  <style>
+    body, * {
+      font-family: monospace;
+    }
+    
+    input[type="text"] {
+      min-width: 700px;
+    }
+    
+    input[type="button"] {
+      cursor: pointer;
+    }
+    
+    form div {
+      padding: 3px;
+    }
+    
+    form label {
+      display: inline-block;
+      min-width: 70px;
+      font-weight: bold;
+    }
+    
+    form select {
+      min-width: 50px;
+    }
+  </style>
+<body>
+  <h2>Test</h2>
+  <form>
+    <div>
+      <label for="file_url">file_url:</label>
+      <input id="file_url" placeholder="e.g.: https://s3-ap-southeast-1.amazonaws.com/converter-effy/AITranslate_1_1722065038.pdf" type="text"></input>
+    </div>
+    <div>
+      <label for="op">op:</label>
+      <select id="op"></select>
+    </div>
+    <div>
+      <label for="type">type:</label>
+      <select id="type"></select>
+    </div>
+    <div>
+      <input id="reset" type="button" value="Reset"></input>
+      <input id="send" type="button" value="Send"></input>
+    </div>
+  </form>
+  
+  <script>
+    const DEFAULT_PDF = "https://s3-ap-southeast-1.amazonaws.com/converter-effy/AITranslate_1_1722065038.pdf";
+    
+    let fileUrlEl = document.querySelector('#file_url');
+    let opEl = document.querySelector('#op');
+    let typeEl = document.querySelector('#type');
+    let resetEl = document.querySelector('#reset');
+    let sendEl = document.querySelector('#send');
+    
+    ['', 0, 1].forEach((opt) => opEl.options.add(new Option(opt)));
+    ['', 0, 1, 2].forEach((opt) => typeEl.options.add(new Option(opt)));
+    
+    resetEl.addEventListener('click', (evt) => {
+      fileUrlEl.value = DEFAULT_PDF;
+      opEl.value = "";
+      typeEl.value = "";
+    });
+    
+    sendEl.addEventListener('click', (evt) => {
+      let endpoint = "http://localhost:5000/clean_pdf";
+      
+      payload = {
+        file_url: fileUrlEl.value,
+      };
+      if (opEl.value != '') payload.op = opEl.value;
+      if (typeEl.value != '') payload.type = typeEl.value;
+      
+      console.log('Sending payload: ', payload);
+      
+      const headers = new Headers({
+        "Content-Type": "application/json"
+      });
+
+      fetch(endpoint,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(payload)
+      })
+      .then(res => { return res.blob(); })
+      .then(blob => { 
+        console.log(blob);
+        let blobURL = URL.createObjectURL(blob);
+        
+        window.location = blobURL;
+      })
+      .catch(error => console.error(error));
+    });
+    
+    resetEl.click();
+  </script>
+</body>
+</html>
