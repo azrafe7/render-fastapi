@@ -50,11 +50,13 @@ def concat_images(images):
     total_height = sum(heights)
     max_width = max(widths)
     
-    concat_image = Image.new('RGB', (max_width, total_height))
+    concat_image = Image.new('RGBA', (max_width, total_height), color=(0,0,0,0))
     
     y_offset = 0
+    x_offset = 0
     for image in images:
-        concat_image.paste(image, (0, y_offset))
+        x_offset = 0 if image.size[0] == max_width else (max_width - image.size[0]) // 2 # centered
+        concat_image.paste(image, (x_offset, y_offset))
         y_offset += image.size[1]
 
     return concat_image
@@ -62,7 +64,7 @@ def concat_images(images):
 
 def process_pdf(file_url: str, op: int = DEFAULT_OP, type: int = DEFAULT_TYPE):
     logger.debug(f"Processing '{file_url}'")
-    logger.debug(f"Operation  : {ObjectDeletionFlag(op)}")
+    logger.debug(f"Operation  : {repr(ObjectDeletionFlag(op))}")
     logger.debug(f"Output Type: {OUTPUT_MEDIA_TYPES[type]}")
     
     # Check if the input file has a .pdf extension
@@ -82,7 +84,7 @@ def process_pdf(file_url: str, op: int = DEFAULT_OP, type: int = DEFAULT_TYPE):
     pdf_writer = PdfWriter()
 
     # Add pages to writer
-    for page in pdf_reader.pages[:1]:
+    for page in pdf_reader.pages:
         pdf_writer.add_page(page)
 
     # Add metadata (if any)
