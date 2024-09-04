@@ -74,8 +74,8 @@ def process_pdf(file_url: str, op: int = DEFAULT_OP, type: int = DEFAULT_TYPE):
     
     # Check if the input file has a .pdf extension
     file_url = str(file_url) # force-convert to str
-    if not file_url.lower().endswith('.pdf'):
-        raise HTTPException(status_code=400, detail="Input file must have a .pdf extension")
+    # if not file_url.lower().endswith('.pdf'):
+        # raise HTTPException(status_code=400, detail="Input file must have a .pdf extension")
 
     # Fetch the PDF file from the URL
     response = requests.get(file_url)
